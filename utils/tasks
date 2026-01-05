@@ -1,0 +1,101 @@
+from crewai import Task
+
+def create_tasks(topic: str, agents: tuple):
+    """Create and return all tasks"""
+    
+    image_researcher, content_curator, quality_analyst = agents
+    
+    search_task = Task(
+        description=f"""Search for professional images related to '{topic}' across:
+        
+        1. Google Images - Find 10 high-quality, professional images
+        2. Pinterest - Find 10 engaging, visually appealing images
+        3. SlideShare - Find 8 relevant presentations or infographics
+        
+        Focus on:
+        - Professional quality suitable for corporate audiences
+        - Images showing leadership, training, collaboration, innovation
+        - Diverse representation in images
+        - Modern, clean visual aesthetics
+        
+        Compile all results with complete metadata (title, source, URLs, platform).""",
+        agent=image_researcher,
+        expected_output="""A comprehensive JSON-formatted report containing:
+        - All image URLs and thumbnails
+        - Source platforms and original links
+        - Image titles and descriptions
+        - Organized by platform (Google Images, Pinterest, SlideShare)"""
+    )
+    
+    curation_task = Task(
+        description=f"""Using the images found, create 8 complete social media post suggestions for '{topic}'.
+        
+        For EACH post suggestion, provide:
+        
+        1. **Post Number & Title**: Clear identifier
+        2. **Platform**: LinkedIn, Instagram, Facebook, or Twitter
+        3. **Selected Image(s)**: Specific image URL(s) to use
+        4. **Caption**: 
+           - LinkedIn: 150-200 words, professional tone
+           - Instagram: 100-125 words, engaging tone
+           - Twitter: 280 characters max
+           - Facebook: 120-150 words, conversational
+        5. **Hashtags**: 5-8 relevant hashtags
+        6. **CTA**: Clear call-to-action
+        7. **Best Posting Time**: Optimal time for engagement
+        8. **Target Audience**: Specific audience segment
+        
+        Ensure posts align with Edstellar's brand:
+        - Professional corporate training provider
+        - Serves Fortune 500 companies
+        - Focus on leadership development and upskilling
+        - Premium positioning""",
+        agent=content_curator,
+        expected_output="""8 detailed social media post templates, each with:
+        - Complete caption text
+        - Specific image selection with rationale
+        - Platform-specific optimization
+        - Engagement strategy""",
+        context=[search_task]
+    )
+    
+    analysis_task = Task(
+        description=f"""Analyze all post suggestions and provide strategic recommendations:
+        
+        1. **Post Prioritization**: 
+           - Rank posts 1-8 by expected engagement
+           - Explain ranking rationale
+        
+        2. **Content Calendar**:
+           - Suggest posting schedule (dates/times)
+           - Platform distribution strategy
+        
+        3. **A/B Testing Ideas**:
+           - 3-5 specific A/B test suggestions
+           - What to test and why
+        
+        4. **Platform Optimization**:
+           - LinkedIn-specific tips
+           - Instagram best practices
+           - Cross-platform strategy
+        
+        5. **Engagement Tactics**:
+           - Comment response strategies
+           - Community engagement ideas
+        
+        6. **Performance Metrics**:
+           - KPIs to track
+           - Success benchmarks
+        
+        Consider Edstellar's target audience: C-level executives, VPs of HR, 
+        L&D Managers at Fortune 500 companies.""",
+        agent=quality_analyst,
+        expected_output="""A strategic action plan with:
+        - Prioritized content calendar
+        - Specific A/B testing recommendations
+        - Platform-specific optimization strategies
+        - Clear success metrics and KPIs""",
+        context=[search_task, curation_task]
+    )
+    
+    return [search_task, curation_task, analysis_task]
