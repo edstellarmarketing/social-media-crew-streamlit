@@ -1,5 +1,14 @@
 streamlit==1.31.0
-crewai==0.28.8
-crewai-tools==0.2.6
+crewai>=1.0.0
+crewai-tools>=0.12.0
 google-search-results==2.4.2
 python-dotenv==1.0.0
+```
+
+## Add Python Version Control
+
+Create a new file called `.python-version` in your GitHub repo:
+
+**File: `.python-version`**
+```
+3.11
